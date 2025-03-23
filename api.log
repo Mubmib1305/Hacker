@@ -1,0 +1,23 @@
+2025-03-21 23:12:57,781 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 23:12:57,805 - werkzeug - INFO -  * Debugger PIN: 494-707-409
+2025-03-21 23:16:04,636 - werkzeug - INFO -  * Detected change in 'c:\\Users\\LENOVO\\OneDrive - Prince of Songkla University\\‡¥ °Ï∑ÁÕª\\ß“π®È“ß\\Hacker\\api.py', reloading
+2025-03-21 23:16:05,375 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 23:16:05,398 - werkzeug - INFO -  * Debugger PIN: 494-707-409
+2025-03-21 23:16:47,434 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on https://127.0.0.1:5000
+2025-03-21 23:16:47,435 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-21 23:16:47,441 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 23:16:48,026 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 23:16:48,047 - werkzeug - INFO -  * Debugger PIN: 494-707-409
+2025-03-21 23:21:05,113 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 23:21:05] "[33mGET / HTTP/1.1[0m" 404 -
+2025-03-21 23:21:05,168 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 23:21:05] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-21 23:23:25,805 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on https://127.0.0.1:5000
+2025-03-21 23:23:25,806 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-21 23:23:25,812 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 23:23:26,413 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 23:23:26,435 - werkzeug - INFO -  * Debugger PIN: 494-707-409
+2025-03-21 23:23:44,934 - werkzeug - INFO -  * Detected change in 'c:\\Users\\LENOVO\\OneDrive - Prince of Songkla University\\‡¥ °Ï∑ÁÕª\\ß“π®È“ß\\Hacker\\api.py', reloading
+2025-03-21 23:23:45,004 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 23:27:59,970 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 23:36:15,244 - werkzeug - INFO -  * Restarting with stat

@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบติดตามเหตุฉุกเฉิน</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1976d2;
+      --primary-light: #e3f2fd;
+      --secondary-color: #f5f5f5;
+      --success-color: #4caf50;
+      --warning-color: #ff9800;
+      --danger-color: #f44336;
+      --info-color: #03a9f4;
+      --text-primary: #212121;
+      --text-secondary: #757575;
+      --border-color: #e0e0e0;
+    }
+    
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f0f2f5;
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .navbar {
+      background-color: var(--primary-color);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+    
+    .main-container {
+      flex-grow: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .emergency-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border: none;
+      background-color: #fff;
+      height: calc(100vh - 180px);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .card-header {
+      background-color: var(--primary-light);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      padding: 12px 15px;
+      flex-shrink: 0;
+    }
+    
+    .card-header-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-header-title .bi {
+      margin-right: 10px;
+    }
+    
+    .case-id {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-left: 10px;
+    }
+    
+    .card-body {
+      padding: 15px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+    
+    .information-section {
+      margin-bottom: 15px;
+    }
+    
+    .section-title {
+      font-weight: 600;
+      color: var(--primary-color);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    
+    .info-item {
+      margin-bottom: 8px;
+      display: flex;
+    }
+    
+    .info-label {
+      font-weight: 500;
+      color: var(--text-secondary);
+      width: 110px;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+    
+    .info-value {
+      flex-grow: 1;
+      word-break: break-word;
+      font-size: 0.9rem;
+    }
+    
+    .severity-badge {
+      padding: 3px 8px;
+      border-radius: 15px;
+      margin-left: 10px;
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .severity-red {
+      background-color: var(--danger-color);
+    }
+    
+    .severity-yellow {
+      background-color: var(--warning-color);
+    }
+    
+    .severity-green {
+      background-color: var(--success-color);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .action-btn {
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .action-btn .bi {
+      margin-right: 8px;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .location-btn {
+      background-color: #43a047;
+      color: white;
+    }
+    
+    .location-btn:hover {
+      background-color: #388e3c;
+    }
+    
+    .voice-btn {
+      background-color: #1e88e5;
+      color: white;
+    }
+    
+    .voice-btn:hover {
+      background-color: #1976d2;
+    }
+    
+    .timestamp {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+    }
+    
+    .timestamp .bi {
+      margin-right: 5px;
+    }
+    
+    .control-panel {
+      background-color: white;
+      padding: 12px 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 15px;
+      flex-shrink: 0;
+    }
+    
+    #emergencyPagination {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .pagination-info {
+      text-align: center;
+      margin-top: 5px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    
+    .page-item.active .page-link {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .page-link {
+      color: var(--primary-color);
+    }
+    
+    .offcanvas {
+      max-width: 400px;
+    }
+    
+    .field-filter-item {
+      padding: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .field-filter-item:last-child {
+      border-bottom: none;
+    }
+    
+    .no-data-message {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    
+    .blink {
+      animation: blinkAnimation 2s infinite;
+    }
+    
+    @keyframes blinkAnimation {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    @media (max-width: 768px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .badge {
+      font-size: 85%;
+      padding: 0.35em 0.65em;
+    }
+    .control-panel .btn-group {
+  display: inline-flex;
+}
+
+.control-panel .btn-group .btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.control-panel .btn-group .btn:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+#showMapButton {
+  height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+.bi {
+  font-size: 1rem;
+  margin-right: 5px;
+}
+
+@media (max-width: 992px) {
+  .control-panel {
+    padding: 15px;
+  }
+  
+  .control-panel .btn-group,
+  #showMapButton {
+    width: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .control-panel .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+  }
+  
+  .control-panel .btn-group,
+  #showMapButton {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="bi bi-activity"></i> ระบบติดตามเหตุฉุกเฉิน
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#fieldFilterOffcanvas">
+              <i class="bi bi-funnel"></i> ตัวกรองข้อมูล
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid pt-3 main-container">
+    <div class="row">
+      <div class="col-12">
+        <div class="control-panel">
+          <div class="row align-items-center">
+            <div class="col-lg-5 col-md-12 mb-2 mb-lg-0 d-flex">
+              <div class="btn-group me-2">
+                <button id="fetchButton" class="btn btn-primary">
+                  <i class="bi bi-arrow-repeat"></i> ดึงข้อมูลล่าสุด
+                </button>
+                <button id="autoUpdateButton" class="btn btn-warning">
+                  <i class="bi bi-clock"></i> เริ่มอัพเดตอัตโนมัติ
+                </button>
+              </div>
+              <button id="showMapButton" class="btn btn-success">
+                <i class="bi bi-geo-alt"></i> ดูแผนที่
+              </button>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-2 mb-lg-0">
+              <div class="input-group">
+                <label class="input-group-text" for="interval">อัพเดตทุก</label>
+                <select class="form-select" id="interval">
+                  <option value="5">5 วินาที</option>
+                  <option value="10">10 วินาที</option>
+                  <option value="30">30 วินาที</option>
+                  <option value="60">1 นาที</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-8 col-sm-6">
+              <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาข้อมูล...">
+                <button class="btn btn-outline-primary" type="button" id="searchButton">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-12">
+              <div class="d-flex justify-content-between align-items-center">
+                <div id="status" class="alert d-none p-2 mb-0"></div>
+                <div class="timestamp" id="timestamp">
+                  <i class="bi bi-clock-history"></i> อัพเดตล่าสุด: -
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="emergencyCards" class="flex-grow-1 overflow-hidden">
+      <div class="text-center p-5" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">กำลังโหลด...</span>
+        </div>
+        <div class="mt-3">กำลังดึงข้อมูลเหตุฉุกเฉิน...</div>
+      </div>
+    </div>
+
+    <nav id="emergencyPagination" aria-label="Emergency pagination">
+    </nav>
+    <div class="pagination-info pb-2">แสดงเคส <span id="paginationInfo">0-0 จาก 0</span></div>
+  </div>
+
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="fieldFilterOffcanvas" aria-labelledby="fieldFilterOffcanvasLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="fieldFilterOffcanvasLabel">ตัวกรองการแสดงข้อมูล</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="mb-3">
+        <div class="d-flex justify-content-between mb-2">
+          <button id="selectAllFields" class="btn btn-sm btn-outline-primary">เลือกทั้งหมด</button>
+          <button id="unselectAllFields" class="btn btn-sm btn-outline-secondary">ยกเลิกทั้งหมด</button>
+        </div>
+        <div id="fieldFilterList" class="list-group">
+        </div>
+      </div>
+      <button id="applyFieldFilter" class="btn btn-primary w-100 mt-3">นำไปใช้</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const { ipcRenderer, shell } = require('electron');
+
+    document.getElementById('showMapButton').addEventListener('click', openCurrentMap);
+
+function openCurrentMap() {
+  if (currentData && currentData.data && currentData.data.length > 0) {
+    const index = (currentPage - 1) * itemsPerPage;
+    if (index < currentData.data.length) {
+      const currentItem = currentData.data[index];
+      console.log("ข้อมูลที่จะเปิดแผนที่:", currentItem);
+      
+      if (currentItem && currentItem.RC_POINTLAT && currentItem.RC_POINTLONG) {
+        const url = `https://www.google.com/maps?q=${currentItem.RC_POINTLAT},${currentItem.RC_POINTLONG}`;
+        console.log("เปิด URL:", url);
+        shell.openExternal(url);
+      } else {
+        showStatus('ไม่พบข้อมูลพิกัดสำหรับเคสปัจจุบัน', 'warning');
+      }
+    } else {
+      showStatus('ดัชนีข้อมูลไม่ถูกต้อง', 'warning');
+    }
+  } else {
+    showStatus('ไม่มีข้อมูลสำหรับแสดงแผนที่', 'warning');
+  }
+}
+    
+    let currentData = null;
+    let isAutoUpdateActive = false;
+    let currentPage = 1;
+    let itemsPerPage = 1;
+    let currentSearch = '';
+    
+    let allFields = [
+      'RC_DATE', 'RC_TIME', 'RC_POINT', 'RC_PRIMARYILLNESS', 'IDCC_CODE', 
+      'IDCC_COLOR', 'RC_POINTLAT', 'RC_POINTLONG', 'RC_VOICEPATH', 'CAL_TEL',
+      'USER_CALLER', 'USER_PARAMEDIC', 'RC_TYPE', 'UNIT_NAME', 'RC_RECNO',
+      'RC_MEDICALZONE', 'RC_TAMBON', 'RC_DISTRICT', 'RC_PROVINCE',
+      'RC_POLICE', 'RC_POLICEZONE', 'RC_HOSPITALZONE', 'RC_NOTIFYTYPE',
+      'RC_HOWTONOTIFY', 'CREATED_AT'
+    ];
+    
+    let selectedFields = [...allFields];
+    
+    const fetchButton = document.getElementById('fetchButton');
+    const autoUpdateButton = document.getElementById('autoUpdateButton');
+    const intervalSelect = document.getElementById('interval');
+    const statusElement = document.getElementById('status');
+    const timestampElement = document.getElementById('timestamp');
+    const emergencyCardsElement = document.getElementById('emergencyCards');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const fieldFilterList = document.getElementById('fieldFilterList');
+    const applyFieldFilter = document.getElementById('applyFieldFilter');
+    const selectAllFields = document.getElementById('selectAllFields');
+    const unselectAllFields = document.getElementById('unselectAllFields');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const emergencyPagination = document.getElementById('emergencyPagination');
+    const paginationInfo = document.getElementById('paginationInfo');
+    
+    const fieldLabels = {
+      'RC_DATE': 'วันที่',
+      'RC_TIME': 'เวลา',
+      'RC_POINT': 'สถานที่',
+      'RC_POINTDETAIL': 'รายละเอียดสถานที่',
+      'RC_PRIMARYILLNESS': 'อาการ/สาเหตุ',
+      'IDCC_CODE': 'รหัสเหตุ',
+      'IDCC_COLOR': 'ระดับความรุนแรง',
+      'RC_POINTLAT': 'ละติจูด',
+      'RC_POINTLONG': 'ลองจิจูด',
+      'RC_VOICEPATH': 'ไฟล์เสียง',
+      'CAL_TEL': 'เบอร์โทรติดต่อ',
+      'USER_CALLER': 'ผู้รับแจ้ง',
+      'USER_PARAMEDIC': 'ผู้สั่งการ',
+      'RC_TYPE': 'ประเภทเหตุ',
+      'UNIT_NAME': 'หน่วยปฏิบัติการ',
+      'RC_RECNO': 'รหัสเคส',
+      'RC_MEDICALZONE': 'เขตการแพทย์',
+      'RC_TAMBON': 'ตำบล',
+      'RC_DISTRICT': 'อำเภอ',
+      'RC_PROVINCE': 'จังหวัด',
+      'RC_POLICE': 'สถานีตำรวจ',
+      'RC_POLICEZONE': 'เขตตำรวจ',
+      'RC_HOSPITALZONE': 'โรงพยาบาล',
+      'RC_NOTIFYTYPE': 'ประเภทผู้แจ้งเหตุ',
+      'RC_HOWTONOTIFY': 'วิธีการแจ้งเหตุ',
+      'CREATED_AT': 'เวลาที่บันทึก'
+    };
+    
+    function showStatus(message, type = 'info') {
+      statusElement.textContent = message;
+      statusElement.className = `alert alert-${type} mb-0 py-1 px-2`;
+      statusElement.classList.remove('d-none');
+      
+      setTimeout(() => {
+        statusElement.classList.add('d-none');
+      }, 5000);
+    }
+    
+    async function fetchData() {
+      try {
+        fetchButton.disabled = true;
+        
+        showStatus('กำลังดึงข้อมูลล่าสุดจากเซิร์ฟเวอร์...', 'info');
+        loadingSpinner.style.display = 'block';
+        emergencyCardsElement.innerHTML = '';
+        
+        const result = await ipcRenderer.invoke('fetch-data');
+        
+        if (result.success) {
+          currentData = result.data;
+          
+          if (fieldFilterList.children.length === 0) {
+            populateFieldFilterList();
+          }
+          
+          updateDisplay();
+          
+          timestampElement.innerHTML = `<i class="bi bi-clock-history"></i> อัพเดตล่าสุด: ${result.timestamp || new Date().toLocaleString()}`;
+          
+          showStatus(`ดึงข้อมูลสำเร็จ! พบ ${currentData.data ? currentData.data.length : 0} รายการ`, 'success');
+        } else {
+          showStatus(`เกิดข้อผิดพลาด: ${result.error}`, 'danger');
+          console.error('Error fetching data:', result.error);
+        }
+      } catch (error) {
+        showStatus(`เกิดข้อผิดพลาด: ${error.message}`, 'danger');
+        console.error('Error:', error);
+      } finally {
+        fetchButton.disabled = false;
+        loadingSpinner.style.display = 'none';
+      }
+    }
+    
+    function updateDisplay() {
+      if (!currentData || !currentData.data || !Array.isArray(currentData.data) || currentData.data.length === 0) {
+        emergencyCardsElement.innerHTML = '<div class="no-data-message">ไม่พบข้อมูลเหตุฉุกเฉิน</div>';
+        emergencyPagination.innerHTML = '';
+        paginationInfo.textContent = '0-0 จาก 0';
+        return;
+      }
+      
+      const filteredData = filterDataBySearch(currentData.data);
+      
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      
+      if (currentPage > totalPages) {
+        currentPage = 1;
+      }
+      
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+      const currentPageData = filteredData.slice(startIndex, endIndex);
+      
+      if (filteredData.length > 0) {
+        paginationInfo.textContent = `${startIndex + 1}-${endIndex} จาก ${filteredData.length}`;
+      } else {
+        paginationInfo.textContent = '0-0 จาก 0';
+      }
+      
+      emergencyCardsElement.innerHTML = '';
+      
+      if (currentPageData.length > 0) {
+        currentPageData.forEach(item => {
+          const card = createEmergencyCard(item);
+          emergencyCardsElement.appendChild(card);
+        });
+      } else {
+        emergencyCardsElement.innerHTML = '<div class="no-data-message">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</div>';
+      }
+      
+      createPagination(totalPages);
+    }
+    
+    function createPagination(totalPages) {
+      emergencyPagination.innerHTML = '';
+      
+      if (totalPages <= 1) {
+        return;
+      }
+      
+      const ul = document.createElement('ul');
+      ul.className = 'pagination mb-0 mt-2';
+      
+      const prevLi = document.createElement('li');
+      prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+      
+      const prevLink = document.createElement('a');
+      prevLink.className = 'page-link';
+      prevLink.href = '#';
+      prevLink.setAttribute('aria-label', 'Previous');
+      prevLink.innerHTML = '<span aria-hidden="true">&laquo;</span>';
+      
+      prevLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage > 1) {
+          currentPage--;
+          updateDisplay();
+        }
+      });
+      
+      prevLi.appendChild(prevLink);
+      ul.appendChild(prevLi);
+      
+      const maxVisibleButtons = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisibleButtons / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisibleButtons - 1);
+      
+      if (endPage === totalPages) {
+        startPage = Math.max(1, endPage - maxVisibleButtons + 1);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageLi = document.createElement('li');
+        pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        
+        const pageLink = document.createElement('a');
+        pageLink.className = 'page-link';
+        pageLink.href = '#';
+        pageLink.textContent = i;
+        
+        pageLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          currentPage = i;
+          updateDisplay();
+        });
+        
+        pageLi.appendChild(pageLink);
+        ul.appendChild(pageLi);
+      }
+      
+      const nextLi = document.createElement('li');
+      nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+      
+      const nextLink = document.createElement('a');
+      nextLink.className = 'page-link';
+      nextLink.href = '#';
+      nextLink.setAttribute('aria-label', 'Next');
+      nextLink.innerHTML = '<span aria-hidden="true">&raquo;</span>';
+      
+      nextLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateDisplay();
+        }
+      });
+      
+      nextLi.appendChild(nextLink);
+      ul.appendChild(nextLi);
+      
+      emergencyPagination.appendChild(ul);
+    }
+    
+    function filterDataBySearch(data) {
+      if (!currentSearch) return data;
+      
+      const searchLower = currentSearch.toLowerCase();
+      
+      return data.filter(item => {
+        return Object.keys(item).some(key => {
+          if (typeof item[key] === 'string') {
+            return item[key].toLowerCase().includes(searchLower);
+          }
+          return false;
+        });
+      });
+    }
+    
+    function createEmergencyCard(data) {
+      const container = document.createElement('div');
+      container.className = 'emergency-card';
+      
+      let severityClass = '';
+      let severityText = 'ไม่ระบุ';
+      
+      if (data.IDCC_COLOR) {
+        switch (data.IDCC_COLOR.toLowerCase()) {
+          case 'red':
+            severityClass = 'severity-red';
+            severityText = 'วิกฤต';
+            break;
+          case 'yellow':
+            severityClass = 'severity-yellow';
+            severityText = 'เร่งด่วน';
+            break;
+          case 'green':
+            severityClass = 'severity-green';
+            severityText = 'ไม่เร่งด่วน';
+            break;
+        }
+      }
+      
+      let cardHtml = `
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="card-header-title">
+              <i class="bi bi-exclamation-triangle"></i>
+              เหตุ${data.RC_TYPE || 'ฉุกเฉิน'}
+              ${severityClass ? `<span class="severity-badge ${severityClass}">${severityText}</span>` : ''}
+              ${data.RC_RECNO ? `<span class="case-id">#${data.RC_RECNO}</span>` : ''}
+            </div>
+            <div class="timestamp">
+              <i class="bi bi-calendar-event"></i> ${data.RC_DATE || ''} ${data.RC_TIME || ''}
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+      `;
+      
+      if (shouldDisplaySection(['RC_POINT', 'RC_POINTDETAIL', 'RC_TAMBON', 'RC_DISTRICT', 'RC_PROVINCE', 'RC_POINTLAT', 'RC_POINTLONG'])) {
+        cardHtml += `
+          <div class="information-section">
+            <h5 class="section-title"><i class="bi bi-geo-alt"></i> ข้อมูลสถานที่</h5>
+        `;
+        
+        if (shouldDisplayField('RC_POINT')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">สถานที่:</div>
+              <div class="info-value">${data.RC_POINT || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('RC_POINTDETAIL')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">รายละเอียด:</div>
+              <div class="info-value">${data.RC_POINTDETAIL || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayAnyField(['RC_TAMBON', 'RC_DISTRICT', 'RC_PROVINCE'])) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">ที่อยู่:</div>
+              <div class="info-value">
+                ${shouldDisplayField('RC_TAMBON') && data.RC_TAMBON ? `ต.${data.RC_TAMBON} ` : ''}
+                ${shouldDisplayField('RC_DISTRICT') && data.RC_DISTRICT ? `อ.${data.RC_DISTRICT} ` : ''}
+                ${shouldDisplayField('RC_PROVINCE') ? data.RC_PROVINCE || '' : ''}
+                ${(shouldDisplayField('RC_TAMBON') && !data.RC_TAMBON && 
+                   shouldDisplayField('RC_DISTRICT') && !data.RC_DISTRICT && 
+                   shouldDisplayField('RC_PROVINCE') && !data.RC_PROVINCE) ? '-' : ''}
+              </div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayAnyField(['RC_POINTLAT', 'RC_POINTLONG'])) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">พิกัด:</div>
+              <div class="info-value">
+                ${shouldDisplayField('RC_POINTLAT') ? `${data.RC_POINTLAT || '-'}` : ''}
+                ${shouldDisplayField('RC_POINTLAT') && shouldDisplayField('RC_POINTLONG') ? ', ' : ''}
+                ${shouldDisplayField('RC_POINTLONG') ? `${data.RC_POINTLONG || '-'}`: ''}
+              </div>
+            </div>
+          `;
+        }
+        
+        cardHtml += `</div>`;
+      }
+      
+      if (shouldDisplaySection(['RC_PRIMARYILLNESS', 'IDCC_CODE', 'IDCC_COLOR', 'RC_VOICEPATH', 'RC_TYPE'])) {
+        cardHtml += `
+          <div class="information-section">
+            <h5 class="section-title"><i class="bi bi-clipboard2-pulse"></i> ข้อมูลเหตุฉุกเฉิน</h5>
+        `;
+        
+        if (shouldDisplayField('RC_PRIMARYILLNESS')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">อาการ/สาเหตุ:</div>
+              <div class="info-value">${data.RC_PRIMARYILLNESS || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('IDCC_CODE')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">รหัสเหตุ:</div>
+              <div class="info-value">${data.IDCC_CODE ? data.IDCC_CODE.replace(/<[^>]*>/g, '') : '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('IDCC_COLOR')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">ความรุนแรง:</div>
+              <div class="info-value">
+                ${severityClass ? `<span class="badge ${severityClass}">${severityText}</span>` : '-'}
+              </div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('RC_TYPE')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">ประเภทเหตุ:</div>
+              <div class="info-value">${data.RC_TYPE || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('RC_VOICEPATH')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">ไฟล์เสียง:</div>
+              <div class="info-value">
+                ${data.RC_VOICEPATH ? 
+                  `<a href="${data.RC_VOICEPATH.replace('https://', 'http://')}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-file-earmark-play"></i> ฟังเสียง
+                  </a>` : 
+                  '<span>-</span>'
+                }
+              </div>
+            </div>
+          `;
+        }
+        
+        cardHtml += `</div>`;
+      }
+      
+      if (shouldDisplaySection(['CAL_TEL', 'USER_CALLER', 'RC_NOTIFYTYPE', 'RC_HOWTONOTIFY', 'CREATED_AT'])) {
+        cardHtml += `
+          <div class="information-section">
+            <h5 class="section-title"><i class="bi bi-telephone"></i> ข้อมูลการแจ้งเหตุ</h5>
+        `;
+        
+        if (shouldDisplayField('CAL_TEL')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">เบอร์โทร:</div>
+              <div class="info-value">${data.CAL_TEL || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('USER_CALLER')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">ผู้รับแจ้ง:</div>
+              <div class="info-value">${data.USER_CALLER || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('RC_NOTIFYTYPE')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">ประเภทผู้แจ้ง:</div>
+              <div class="info-value">${data.RC_NOTIFYTYPE || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('RC_HOWTONOTIFY')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">วิธีการแจ้ง:</div>
+              <div class="info-value">${data.RC_HOWTONOTIFY || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('CREATED_AT')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">เวลาที่บันทึก:</div>
+              <div class="info-value">${data.CREATED_AT || '-'}</div>
+            </div>
+          `;
+        }
+        
+        cardHtml += `</div>`;
+      }
+      
+      if (shouldDisplaySection(['UNIT_NAME', 'USER_PARAMEDIC', 'RC_MEDICALZONE', 'RC_HOSPITALZONE', 'RC_POLICE', 'RC_POLICEZONE'])) {
+        cardHtml += `
+          <div class="information-section">
+            <h5 class="section-title"><i class="bi bi-hospital"></i> ข้อมูลการช่วยเหลือ</h5>
+        `;
+        
+        if (shouldDisplayField('UNIT_NAME')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">หน่วยปฏิบัติการ:</div>
+              <div class="info-value">${data.UNIT_NAME || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('USER_PARAMEDIC')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">ผู้สั่งการ:</div>
+              <div class="info-value">${data.USER_PARAMEDIC || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('RC_MEDICALZONE')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">เขตการแพทย์:</div>
+              <div class="info-value">${data.RC_MEDICALZONE || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('RC_HOSPITALZONE')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">โรงพยาบาล:</div>
+              <div class="info-value">${data.RC_HOSPITALZONE || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('RC_POLICE')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">สถานีตำรวจ:</div>
+              <div class="info-value">${data.RC_POLICE || '-'}</div>
+            </div>
+          `;
+        }
+        
+        if (shouldDisplayField('RC_POLICEZONE')) {
+          cardHtml += `
+            <div class="info-item">
+              <div class="info-label">เขตตำรวจ:</div>
+              <div class="info-value">${data.RC_POLICEZONE || '-'}</div>
+            </div>
+          `;
+        }
+        
+        cardHtml += `</div>`;
+      }
+      
+      cardHtml += `
+          </div>
+        </div>
+        <div class="action-buttons">
+      `;
+      
+      if (data.RC_POINTLAT && data.RC_POINTLONG) {
+        cardHtml += `
+          <a href="https://www.google.com/maps?q=${data.RC_POINTLAT},${data.RC_POINTLONG}" target="_blank" class="btn action-btn location-btn">
+            <i class="bi bi-geo-alt"></i> ดูตำแหน่งในแผนที่
+          </a>
+        `;
+      } else {
+        cardHtml += `
+          <button class="btn action-btn location-btn" disabled style="opacity: 0.6;">
+            <i class="bi bi-geo-alt"></i> ไม่มีข้อมูลตำแหน่ง
+          </button>
+        `;
+      }
+      
+      if (data.RC_VOICEPATH) {
+        cardHtml += `
+          <a href="${data.RC_VOICEPATH.replace('https://', 'http://')}" target="_blank" class="btn action-btn voice-btn">
+            <i class="bi bi-file-earmark-play"></i> เล่นเสียงแจ้งเหตุ
+          </a>
+        `;
+      } else {
+        cardHtml += `
+          <button class="btn action-btn voice-btn" disabled style="opacity: 0.6;">
+            <i class="bi bi-file-earmark-play"></i> ไม่มีไฟล์เสียง
+          </button>
+        `;
+      }
+      
+      cardHtml += `
+        </div>
+      `;
+      
+      container.innerHTML = cardHtml;
+      return container;
+    }
+    
+    function shouldDisplayField(field) {
+      return selectedFields.includes(field);
+    }
+    
+    function shouldDisplaySection(fieldList) {
+      return fieldList.some(field => selectedFields.includes(field));
+    }
+    
+    function shouldDisplayAnyField(fieldList) {
+      return fieldList.some(field => selectedFields.includes(field));
+    }
+    
+    function populateFieldFilterList() {
+      fieldFilterList.innerHTML = '';
+      
+      const relevantFields = Object.keys(fieldLabels);
+      
+      relevantFields.forEach(field => {
+        const isChecked = selectedFields.includes(field);
+        
+        const item = document.createElement('div');
+        item.className = 'field-filter-item';
+        
+        item.innerHTML = `
+          <div class="form-check">
+            <input class="form-check-input field-checkbox" type="checkbox" id="field-${field}" 
+                   data-field="${field}" ${isChecked ? 'checked' : ''}>
+            <label class="form-check-label" for="field-${field}">
+              ${fieldLabels[field] || field}
+            </label>
+          </div>
+        `;
+        
+        fieldFilterList.appendChild(item);
+      });
+    }
+    
+    async function toggleAutoUpdate() {
+      try {
+        if (isAutoUpdateActive) {
+          const result = await ipcRenderer.invoke('stop-auto-update');
+          
+          if (result.success) {
+            isAutoUpdateActive = false;
+            autoUpdateButton.innerHTML = '<i class="bi bi-clock"></i> เริ่มอัพเดตอัตโนมัติ';
+            autoUpdateButton.classList.remove('btn-danger');
+            autoUpdateButton.classList.add('btn-warning');
+            
+            showStatus('หยุดการอัพเดตอัตโนมัติแล้ว', 'info');
+            
+            timestampElement.classList.remove('blink');
+          }
+        } else {
+          const intervalSeconds = parseInt(intervalSelect.value);
+          
+          showStatus(`กำลังเริ่มการอัพเดตอัตโนมัติทุก ${intervalSeconds} วินาที...`, 'info');
+          
+          const result = await ipcRenderer.invoke('start-auto-update', intervalSeconds);
+          
+          if (result.success) {
+            isAutoUpdateActive = true;
+            autoUpdateButton.innerHTML = '<i class="bi bi-stop-circle"></i> หยุดอัพเดตอัตโนมัติ';
+            autoUpdateButton.classList.remove('btn-warning');
+            autoUpdateButton.classList.add('btn-danger');
+            
+            showStatus(`กำลังอัพเดตข้อมูลอัตโนมัติทุก ${intervalSeconds} วินาที`, 'success');
+            
+            timestampElement.classList.add('blink');
+          }
+        }
+      } catch (error) {
+        showStatus(`เกิดข้อผิดพลาด: ${error.message}`, 'danger');
+      }
+    }
+    
+    ipcRenderer.on('auto-update-data', (event, result) => {
+      if (result.success) {
+        currentData = result.data;
+        
+        updateDisplay();
+        
+        timestampElement.innerHTML = `<i class="bi bi-clock-history"></i> อัพเดตล่าสุด: ${result.timestamp || new Date().toLocaleString()}`;
+      } else {
+        showStatus(`เกิดข้อผิดพลาดในการอัพเดตอัตโนมัติ: ${result.error}`, 'warning');
+      }
+    });
+    
+    ipcRenderer.on('auto-update-error', (event, error) => {
+      showStatus(`เกิดข้อผิดพลาดในการอัพเดตอัตโนมัติ: ${error.error}`, 'warning');
+    });
+    
+    async function checkAutoUpdateStatus() {
+      try {
+        const status = await ipcRenderer.invoke('check-auto-update-status');
+        isAutoUpdateActive = status.isRunning;
+        
+        if (isAutoUpdateActive) {
+          autoUpdateButton.innerHTML = '<i class="bi bi-stop-circle"></i> หยุดอัพเดตอัตโนมัติ';
+          autoUpdateButton.classList.remove('btn-warning');
+          autoUpdateButton.classList.add('btn-danger');
+          timestampElement.classList.add('blink');
+        }
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการตรวจสอบสถานะการอัพเดตอัตโนมัติ:', error);
+      }
+    }
+    
+    fetchButton.addEventListener('click', fetchData);
+    autoUpdateButton.addEventListener('click', toggleAutoUpdate);
+    
+    searchButton.addEventListener('click', () => {
+      currentSearch = searchInput.value.trim();
+      currentPage = 1;
+      updateDisplay();
+    });
+    
+    searchInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        currentSearch = searchInput.value.trim();
+        currentPage = 1;
+        updateDisplay();
+      }
+    });
+    
+    selectAllFields.addEventListener('click', () => {
+      const checkboxes = document.querySelectorAll('.field-checkbox');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+      });
+    });
+    
+    unselectAllFields.addEventListener('click', () => {
+      const checkboxes = document.querySelectorAll('.field-checkbox');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+      });
+    });
+    
+    applyFieldFilter.addEventListener('click', () => {
+      const checkboxes = document.querySelectorAll('.field-checkbox:checked');
+      selectedFields = Array.from(checkboxes).map(checkbox => checkbox.getAttribute('data-field'));
+      
+      const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('fieldFilterOffcanvas'));
+      offcanvas.hide();
+      
+      updateDisplay();
+      
+      showStatus('อัพเดตการแสดงผลเรียบร้อย', 'success');
+    });
+    
+    checkAutoUpdateStatus();
+    
+    fetchData();
+  </script>
+</body>
+</html>

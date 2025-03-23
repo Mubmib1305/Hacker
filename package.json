@@ -1,0 +1,13 @@
+{
+    "name": "emergency-data-app",
+    "version": "1.0.0",
+    "description": "แอพพลิเคชันสำหรับดึงข้อมูลเหตุฉุกเฉิน",
+    "main": "main.js",
+    "scripts": {
+      "start": "electron . --ignore-certificate-errors --disable-web-security --allow-insecure-localhost"
+    },
+    "dependencies": {
+      "axios": "^1.4.0",
+      "electron": "^23.1.0"
+    }
+  }
