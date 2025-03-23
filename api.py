@@ -52,7 +52,7 @@ def get_data():
         if session is None:
             return {"message": "Login failed. Check credentials."}, 401
 
-    data_url = "https://www.erawancenter.bangkok.go.th/command-datatable?draw=1&columns%5B0%5D%5Bdata%5D=RC_DATE&columns%5B1%5D%5Bdata%5D=RC_TIME&columns%5B2%5D%5D=RC_POINT&columns%5B3%5D%5D=CAL_TEL&columns%5B4%5D%5D=RC_PRIMARYILLNESS&columns%5B5%5D%5D=USER_CALLER"
+    data_url = "https://www.erawancenter.bangkok.go.th/command-datatable?draw=1&columns%5B0%5D%5Bdata%5D=RC_DATE&columns%5B1%5D%5Bdata%5D=RC_TIME&columns%5B2%5D%5Bdata%5D=RC_POINT&columns%5B3%5D%5Bdata%5D=CAL_TEL&columns%5B4%5D%5Bdata%5D=RC_PRIMARYILLNESS&columns%5B5%5D%5Bdata%5D=USER_CALLER&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=desc&order%5B1%5D%5Bcolumn%5D=1&order%5B1%5D%5Bdir%5D=desc&start=0&length=10&tab=calltaker&type=calltaker"
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
